@@ -1,0 +1,48 @@
+# Node modules
+node_modules/
+packages/**/node_modules/
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids/
+*.pid
+*.pid.lock
+
+# Dependency directories
+packages/**/node_modules/
+
+# Build outputs
+dist/
+build/
+out/
+*.tgz
+
+# Lerna packages
+lerna-debug.log
+lerna.json
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Coverage
+coverage/
+*.lcov
+
+# Yarn v1
+.yarn/
+
+# Yarn v2+
+.pnp.*
+.yarnrc.yml
+
+# Next.js
+.next/

@@ -1,0 +1,15 @@
+{
+  "name": "music-system",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "start": "concurrently \"lerna run dev --scope=@music-system/backend\" \"lerna run dev --scope=@music-system/frontend\"",
+    "start:backend": "lerna run dev --scope=@music-system/backend",
+    "start:frontend": "lerna run dev --scope=@music-system/frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
