@@ -22,7 +22,7 @@ out/
 
 # Lerna packages
 lerna-debug.log
-lerna.json
+# lerna.json
 
 # OS-specific files
 .DS_Store
