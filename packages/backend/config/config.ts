@@ -12,6 +12,7 @@ interface DbConfig {
 interface AppConfig {
   db: DbConfig;
   port: number;
+  jwtSecret: string;
 }
 
 const config: AppConfig = {
@@ -21,7 +22,8 @@ const config: AppConfig = {
     password: process.env.DB_PASSWORD || '',
     database: process.env.DB_DATABASE || 'my_database'
   },
-  port: Number(process.env.PORT) || 5000
+  port: Number(process.env.PORT) || 5000,
+  jwtSecret: process.env.JWT_SECRET || '',
 };
 
 export default config;

@@ -19,6 +19,7 @@ const createUserTableQuery = `
     username VARCHAR(100) NOT NULL,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
+    refresh_token VARCHAR(500),
     role ENUM('super_admin', 'artist_manager', 'artist') NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );

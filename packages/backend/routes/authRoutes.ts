@@ -1,9 +1,24 @@
 import express from 'express';
-import { register } from '../controllers/authController';
-import { validateRegistration } from '../validators/authValidators';
+import AuthController from '../controllers/authController';
+import AuthValidator from '../validators/authValidators';
+import loginRateLimiter from '../middleware/rateLimiter'; 
 
 const router = express.Router();
 
-router.post('/register', validateRegistration, register);
+router.post('/register', 
+    AuthValidator.validateMiddleware,  
+    AuthController.register
+);
+
+router.post('/login', 
+    loginRateLimiter, 
+    AuthValidator.getLoginValidationRules(),  
+    AuthValidator.validateMiddleware,  
+    AuthController.login
+);
+
+router.post('/refresh', 
+    AuthController.refreshToken 
+);
 
 export default router;
