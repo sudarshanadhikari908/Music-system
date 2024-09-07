@@ -151,6 +151,35 @@ async  refreshToken(req: Request, res: Response): Promise<void> {
       res.status(401).json({ message: 'Invalid refresh token' });
   }
 }
+async logout(req: Request, res: Response): Promise<void> {
+  try {
+      const refreshToken = req.cookies['refreshToken'];
+
+      if (refreshToken) {
+          await UserModel.removeRefreshToken(refreshToken);
+      }
+
+      res.cookie('accessToken', '', {
+          httpOnly: true,
+          secure: false, 
+          sameSite: 'strict',
+          expires: new Date(0),
+      });
+
+      res.cookie('refreshToken', '', {
+          httpOnly: true,
+          secure: false,
+          sameSite: 'strict',
+          expires: new Date(0),
+      });
+
+      res.json({ message: "Logout successful" });
+  } catch (err) {
+      console.error("Logout error: ", err);
+      res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 }
 
 export default new AuthController();
