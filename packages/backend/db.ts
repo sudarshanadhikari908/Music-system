@@ -1,5 +1,5 @@
-import mysql, { Pool } from 'mysql2/promise';
-import config from './config/config'; 
+import mysql, { Pool } from "mysql2/promise";
+import config from "./config/config";
 
 // Create a MySQL connection pool
 const pool: Pool = mysql.createPool({
@@ -9,19 +9,26 @@ const pool: Pool = mysql.createPool({
   database: config.db.database,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
 });
 
 // SQL queries to create tables
 const createUserTableQuery = `
   CREATE TABLE IF NOT EXISTS User (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
     username VARCHAR(100) NOT NULL,
     password VARCHAR(255) NOT NULL,
+    mobile_number VARCHAR(20),
+    dob DATETIME,
+    gender ENUM('M', 'F', 'O'),
+    address VARCHAR(255),
     email VARCHAR(100) UNIQUE NOT NULL,
     refresh_token VARCHAR(500),
     role ENUM('super_admin', 'artist_manager', 'artist') NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   );
 `;
 

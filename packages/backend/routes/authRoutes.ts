@@ -6,6 +6,7 @@ import loginRateLimiter from '../middleware/rateLimiter';
 const router = express.Router();
 
 router.post('/register', 
+    AuthValidator.getRegistrationValidationRules(),
     AuthValidator.validateMiddleware,  
     AuthController.register
 );
