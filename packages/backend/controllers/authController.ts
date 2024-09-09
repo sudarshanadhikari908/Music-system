@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import UserModel from "../models/userModel";
 import config from "../config/config";
+import { hashPassword } from "../utils/passwordUtil";
 
 interface RegisterRequestBody {
   first_name:string;
@@ -42,8 +43,8 @@ class AuthController {
         return;
       }
 
-      const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      const hashedPassword = await hashPassword(password);
+
 
       await UserModel.create({
         username,
@@ -84,7 +85,7 @@ class AuthController {
         userRecord.password
       );
       if (!isPasswordValid) {
-        res.status(401).json({ message: "Invalid username or password" });
+        res.status(401).json({ message: "Invalid email or password" });
         return;
       }
 

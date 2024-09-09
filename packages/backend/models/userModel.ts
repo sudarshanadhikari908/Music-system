@@ -1,6 +1,8 @@
 import { searchQuery } from "../utils/search";
 import pool from "../db";
 import { RowDataPacket } from "mysql2/promise";
+import { FieldPacket, ResultSetHeader } from 'mysql2';
+import { hashPassword } from "../utils/passwordUtil";
 
 interface User {
   username: string;
@@ -22,7 +24,6 @@ class UserModel {
     searchParams: { [key: string]: string } = {}
   ): Promise<any> {
     try {
-      console.log("In find all");
       const allowedFields = ["first_name", "last_name", "email"];
       const { query: whereClause, params: queryParams } = searchQuery(
         searchParams,
@@ -97,8 +98,8 @@ LIMIT ? OFFSET ?;
       username,
       first_name,
       last_name,
-      email,
       password,
+      email,
       role,
       mobile_number,
       dob,
@@ -106,15 +107,15 @@ LIMIT ? OFFSET ?;
       address,
     } = user;
     const query =
-      "INSERT INTO User (first_name,last_name,username, password, email, role,mobile_number,dob,gender,address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO User (first_name, last_name, username, email, password, role, mobile_number, dob, gender, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     try {
       await pool.query(query, [
         first_name,
         last_name,
         username,
-        password,
         email,
+        password,
         role,
         mobile_number,
         dob,
@@ -122,19 +123,77 @@ LIMIT ? OFFSET ?;
         address,
       ]);
     } catch (err) {
-      console.log(err, "I am from err");
       throw err;
     }
   }
 
   static async findById(id: number): Promise<any> {
-    const query = "SELECT * FROM User WHERE id = ?";
+    const query = `SELECT id, 
+    first_name, 
+    last_name, 
+    username, 
+    email, 
+    role, 
+    mobile_number, 
+    dob, 
+    gender, 
+    address, 
+    created_at, 
+    updated_at 
+FROM User 
+WHERE id = ?`;
+
     try {
       const [rows] = await pool.query<RowDataPacket[]>(query, [id]);
       return rows[0];
     } catch (err) {
       console.error("Error finding user by ID: ", err);
       throw err;
+    }
+  }
+  
+
+  static async updateById(id: number, data: Partial<Record<string, any>>): Promise<boolean> {
+    const allowedFields = [
+      'first_name', 'last_name', 'username', 'email', 'role',
+      'mobile_number', 'dob', 'gender', 'address', 'password'
+    ];
+  
+    const fieldsToUpdate = Object.keys(data).filter(key => allowedFields.includes(key));
+  
+    if (fieldsToUpdate.length === 0) {
+      throw new Error('No valid fields provided for update');
+    }
+  
+    if (data.password) {
+      data.password = await hashPassword(data.password);
+    }
+  
+    // Create the SET clause for the SQL query
+    const setClause = fieldsToUpdate.map(field => `${field} = ?`).join(', ');
+  
+    const query = `UPDATE User SET ${setClause}, updated_at = NOW() WHERE id = ?`;
+  
+    const values = [...fieldsToUpdate.map(field => data[field]), id];
+  
+    try {
+      const [result, _]: [ResultSetHeader, FieldPacket[]] = await pool.execute<ResultSetHeader>(query, values);
+      return result.affectedRows > 0;
+    } catch (error) {
+      console.error('Error executing updateById query:', error);
+      throw error;
+    }
+  }
+
+  static async deleteById(id: number): Promise<boolean> {
+    const query = "DELETE FROM User WHERE id = ?";
+
+    try {
+      const [result, _]: [ResultSetHeader, FieldPacket[]] = await pool.execute<ResultSetHeader>(query, [id]);
+      return result.affectedRows > 0;
+    } catch (error) {
+      console.error("Error executing deleteById query:", error);
+      throw error;
     }
   }
 
