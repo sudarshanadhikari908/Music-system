@@ -36,9 +36,14 @@ const createArtistTableQuery = `
   CREATE TABLE IF NOT EXISTS Artist (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
+    dob DATETIME,
+    gender ENUM('M', 'F', 'O'),
+    no_of_albums_released INT,
     genre VARCHAR(50),
     bio TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    first_release_year YEAR,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   );
 `;
 

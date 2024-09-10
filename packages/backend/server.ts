@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 import cors from './middleware/cors';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
+import artistRoutes from './routes/artistRoutes';
 
 const app: Application = express();
 
@@ -13,6 +14,7 @@ app.use(cors);
 
 app.use('/music-system/auth', authRoutes);
 app.use('/music-system', userRoutes);
+app.use('/music-system', artistRoutes);
 
 
 const PORT: number = Number(process.env.PORT) || 5000;
