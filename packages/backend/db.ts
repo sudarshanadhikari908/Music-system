@@ -35,11 +35,11 @@ const createUserTableQuery = `
 const createArtistTableQuery = `
   CREATE TABLE IF NOT EXISTS Artist (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(255) NOT NULL,
     dob DATETIME,
     gender ENUM('M', 'F', 'O'),
+    address VARCHAR(255),
     no_of_albums_released INT,
-    genre VARCHAR(50),
     bio TEXT,
     first_release_year YEAR,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -51,15 +51,15 @@ const createSongTableQuery = `
   CREATE TABLE IF NOT EXISTS Song (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
-    artist_id INT,
-    album VARCHAR(100),
-    release_date DATE,
-    genre VARCHAR(50),
-    duration INT, -- In seconds
-    FOREIGN KEY (artist_id) REFERENCES Artist(id) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    artist_id INT NOT NULL,
+    album_name VARCHAR(255),
+    genre ENUM('rnb', 'country', 'classic', 'rock', 'jazz'),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_artist FOREIGN KEY (artist_id) REFERENCES Artist(id) ON DELETE CASCADE 
   );
 `;
+
 
 // Function to create tables
 async function createTables(): Promise<void> {

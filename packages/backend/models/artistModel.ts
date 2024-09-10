@@ -16,7 +16,7 @@ class ArtistModel {
     try {
       const query = `
         SELECT 
-          id, name, dob, gender, no_of_albums_released, genre, bio, first_release_year, created_at, updated_at, 
+          id, name, dob, gender, no_of_albums_released, bio, first_release_year, created_at, updated_at, 
           (SELECT COUNT(*) FROM Artist) AS total 
         FROM Artist 
         LIMIT ? OFFSET ?;
@@ -35,7 +35,7 @@ class ArtistModel {
 
   static async findById(id: number): Promise<Artist | null> {
     const query = `
-      SELECT id, name, dob, gender, no_of_albums_released, genre, bio, first_release_year, created_at, updated_at 
+      SELECT id, name, dob, gender, no_of_albums_released, bio, first_release_year, created_at, updated_at 
       FROM Artist 
       WHERE id = ?
     `;
@@ -56,12 +56,12 @@ class ArtistModel {
   static async create(artist: Artist): Promise<void> {
     const { name, dob, gender, no_of_albums_released, genre, bio, first_release_year } = artist;
     const query = `
-      INSERT INTO Artist (name, dob, gender, no_of_albums_released, genre, bio, first_release_year) 
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO Artist (name, dob, gender, no_of_albums_released, bio, first_release_year) 
+      VALUES (?, ?, ?, ?, ?, ?)
     `;
 
     try {
-      await pool.query(query, [name, dob, gender, no_of_albums_released, genre, bio, first_release_year]);
+      await pool.query(query, [name, dob, gender, no_of_albums_released, bio, first_release_year]);
     } catch (error) {
       console.error("Error creating artist:", error);
       throw error;
@@ -69,7 +69,7 @@ class ArtistModel {
   }
 
   static async updateById(id: number, data: Partial<Artist>): Promise<boolean> {
-    const allowedFields = ['name', 'dob', 'gender', 'no_of_albums_released', 'genre', 'bio', 'first_release_year'];
+    const allowedFields = ['name', 'dob', 'gender', 'no_of_albums_released', 'bio', 'first_release_year'];
     const fieldsToUpdate = Object.keys(data).filter(key => allowedFields.includes(key));
 
     if (fieldsToUpdate.length === 0) {

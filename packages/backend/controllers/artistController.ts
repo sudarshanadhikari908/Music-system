@@ -49,10 +49,10 @@ class ArtistController {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, dob, gender, no_of_albums_released, genre, bio, first_release_year } = req.body;
+    const { name, dob, gender, no_of_albums_released, bio, first_release_year } = req.body;
 
     try {
-      await Artist.create({ name, dob, gender, no_of_albums_released, genre, bio, first_release_year });
+      await Artist.create({ name, dob, gender, no_of_albums_released, bio, first_release_year });
       return res.status(201).json({ message: "Artist created successfully" });
     } catch (error) {
       console.error("Error creating artist:", error);
@@ -72,7 +72,7 @@ class ArtistController {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, dob, gender, no_of_albums_released, genre, bio, first_release_year } = req.body;
+    const { name, dob, gender, no_of_albums_released, bio, first_release_year } = req.body;
 
     try {
       const artist = await Artist.findById(artistId);
@@ -80,7 +80,7 @@ class ArtistController {
         return res.status(404).json({ message: "Artist not found" });
       }
 
-      const updatedArtist = await Artist.updateById(artistId, { name, dob, gender, no_of_albums_released, genre, bio, first_release_year });
+      const updatedArtist = await Artist.updateById(artistId, { name, dob, gender, no_of_albums_released, bio, first_release_year });
       return res.status(200).json({ message: "Artist updated", artist: updatedArtist });
     } catch (error) {
       console.error("Error updating artist:", error);
