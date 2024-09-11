@@ -1,6 +1,7 @@
 import express from "express";
 import ArtistController from "../controllers/artistController";
 import AuthMiddleware from '../middleware/authenticateToken';
+import FileImportMiddleware from '../middleware/fileUploadMiddleware';
 import ArtistValidator from "../validators/artistValidator";
 
 const router = express.Router();
@@ -15,6 +16,18 @@ router.post(
   ArtistValidator.getArtistValidationRules(), 
   ArtistValidator.validateMiddleware, 
   ArtistController.createArtist
+);
+
+router.post(
+  "/artist/import",
+  AuthMiddleware.authenticateToken,
+  FileImportMiddleware.singleFile(), 
+  ArtistController.importArtists
+);
+router.post(
+  "/artist/export",
+  AuthMiddleware.authenticateToken,
+  ArtistController.exportArtists
 );
 
 router.put(

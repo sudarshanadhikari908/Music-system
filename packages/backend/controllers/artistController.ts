@@ -1,12 +1,31 @@
 import { Request, Response } from "express";
 import Artist from "../models/artistModel";
+import csvParser from "csv-parser";
+import fs from "fs";
+import { parse } from "json2csv";
 import Pagination from "../utils/pagination";
 import { validationResult } from "express-validator";
+
+interface FileImportRequest extends Request {
+  file?: Express.Multer.File;
+}
+
+interface ArtistInterface {
+  name: string;
+  dob: Date;
+  gender: string;
+  no_of_albums_released: number;
+  genre: string;
+  bio: string;
+  first_release_year: number;
+}
 
 class ArtistController {
   static async getArtists(req: Request, res: Response): Promise<Response> {
     try {
-      const page = req?.query?.page ? parseInt(req.query.page as string, 10) : 1;
+      const page = req?.query?.page
+        ? parseInt(req.query.page as string, 10)
+        : 1;
       const pageSize = req?.query?.pageSize
         ? parseInt(req.query.pageSize as string, 10)
         : 10;
@@ -49,13 +68,100 @@ class ArtistController {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, dob, gender, no_of_albums_released, bio, first_release_year } = req.body;
+    const {
+      name,
+      dob,
+      gender,
+      no_of_albums_released,
+      bio,
+      first_release_year,
+    } = req.body;
 
     try {
-      await Artist.create({ name, dob, gender, no_of_albums_released, bio, first_release_year });
+      await Artist.create({
+        name,
+        dob,
+        gender,
+        no_of_albums_released,
+        bio,
+        first_release_year,
+      });
       return res.status(201).json({ message: "Artist created successfully" });
     } catch (error) {
       console.error("Error creating artist:", error);
+      return res.status(500).json({ message: "Server error", error });
+    }
+  }
+
+  static async importArtists(
+    req: FileImportRequest,
+    res: Response
+  ): Promise<Response> {
+    try {
+      const file = req.file;
+      console.log(req, "Hey hey");
+      console.log(file?.mimetype, req?.file, "K cha  yiniharuma");
+      if (
+        !file ||
+        (!file.mimetype.includes("csv") &&
+          !file.mimetype.includes("excel") &&
+          !file.mimetype.includes("spreadsheetml"))
+      ) {
+        return res
+          .status(400)
+          .json({ message: "Please upload a valid CSV file." });
+      }
+
+      const artists: ArtistInterface[] = [];
+
+      await new Promise<void>((resolve, reject) => {
+        fs.createReadStream(file.path)
+          .pipe(csvParser())
+          .on("data", (row) => {
+            artists.push({
+              name: row.name,
+              dob: new Date(row.dob),
+              gender: row.gender,
+              no_of_albums_released: parseInt(row.no_of_albums_released, 10),
+              genre: row.genre,
+              bio: row.bio,
+              first_release_year: parseInt(row.first_release_year, 10),
+            });
+          })
+          .on("end", resolve)
+          .on("error", reject);
+      });
+
+      for (const artist of artists) {
+        await Artist.create(artist);
+      }
+
+      return res.status(201).json({ message: "Artists imported successfully" });
+    } catch (error) {
+      console.error("Error importing artists:", error);
+      return res.status(500).json({ message: "Server error", error });
+    }
+  }
+
+  static async exportArtists(req: Request, res: Response): Promise<Response> {
+    try {
+      const { artists } = await Artist.findAll(1000, 0);
+      const fields = [
+        "name",
+        "dob",
+        "gender",
+        "no_of_albums_released",
+        "genre",
+        "bio",
+        "first_release_year",
+      ];
+
+      const csv = parse(artists, { fields });
+      res.header("Content-Type", "text/csv");
+      res.attachment("artists.csv");
+      return res.send(csv);
+    } catch (error) {
+      console.error("Error exporting artists:", error);
       return res.status(500).json({ message: "Server error", error });
     }
   }
@@ -72,7 +178,14 @@ class ArtistController {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, dob, gender, no_of_albums_released, bio, first_release_year } = req.body;
+    const {
+      name,
+      dob,
+      gender,
+      no_of_albums_released,
+      bio,
+      first_release_year,
+    } = req.body;
 
     try {
       const artist = await Artist.findById(artistId);
@@ -80,8 +193,17 @@ class ArtistController {
         return res.status(404).json({ message: "Artist not found" });
       }
 
-      const updatedArtist = await Artist.updateById(artistId, { name, dob, gender, no_of_albums_released, bio, first_release_year });
-      return res.status(200).json({ message: "Artist updated", artist: updatedArtist });
+      const updatedArtist = await Artist.updateById(artistId, {
+        name,
+        dob,
+        gender,
+        no_of_albums_released,
+        bio,
+        first_release_year,
+      });
+      return res
+        .status(200)
+        .json({ message: "Artist updated", artist: updatedArtist });
     } catch (error) {
       console.error("Error updating artist:", error);
       return res.status(500).json({ message: "Server error", error });
