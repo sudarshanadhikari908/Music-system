@@ -1,9 +1,13 @@
 import AuthMiddleware from '../middleware/authenticateToken';
 import UserController from '../controllers/userController';
+import AuthController from '../controllers/authController';
 import express from 'express';
 import UserValidator from '../validators/userValidator';
 
 const router = express.Router();
+
+
+router.get('/profile', AuthMiddleware.authenticateToken, AuthController.getProfile);
 
 router.get('/users', AuthMiddleware.authenticateToken, UserController.getUsers);
 

@@ -6,16 +6,16 @@ import config from "../config/config";
 import { hashPassword } from "../utils/passwordUtil";
 
 interface RegisterRequestBody {
-  first_name:string;
-  last_name:string;
+  first_name: string;
+  last_name: string;
   username: string;
   email: string;
   password: string;
   role: string;
-  dob:string;
-  gender:string;
-  mobile_number:string;
-  address:string;
+  dob: string;
+  gender: string;
+  mobile_number: string;
+  address: string;
 }
 
 interface LoginRequestBody {
@@ -33,7 +33,18 @@ class AuthController {
     req: Request<{}, {}, RegisterRequestBody>,
     res: Response
   ): Promise<void> {
-    const { username, email, password, role,dob,gender,mobile_number,address,first_name,last_name } = req.body;
+    const {
+      username,
+      email,
+      password,
+      role,
+      dob,
+      gender,
+      mobile_number,
+      address,
+      first_name,
+      last_name,
+    } = req.body;
     try {
       const existingUser = await UserModel.findByEmail(email);
       if (existingUser.length > 0) {
@@ -44,7 +55,6 @@ class AuthController {
       }
 
       const hashedPassword = await hashPassword(password);
-
 
       await UserModel.create({
         username,
@@ -99,40 +109,27 @@ class AuthController {
         { expiresIn: "1h" }
       );
 
-      const refreshToken = jwt.sign(
-        { id: userRecord.id },
-        config.jwtSecret, 
-        { expiresIn: "7d" } 
-      );
+      const refreshToken = jwt.sign({ id: userRecord.id }, config.jwtSecret, {
+        expiresIn: "7d",
+      });
 
-      
       await UserModel.storeRefreshToken(userRecord.id, refreshToken);
 
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: false,
         sameSite: "strict",
-        maxAge: 3600 * 1000, 
+        maxAge: 3600 * 1000,
       });
 
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: false,
         sameSite: "strict",
-        maxAge: 7 * 24 * 3600 * 1000, 
+        maxAge: 7 * 24 * 3600 * 1000,
       });
 
-      res.json({
-        message: "Login successful",
-        role: userRecord.role,
-        email: userRecord.email,
-        username: userRecord.username,
-        firstName: userRecord?.first_name,
-        lastName: userRecord?.last_name,
-        dob: userRecord?.dob,
-        gender: userRecord?.gender,
-        address: userRecord?.address
-      });
+      res.status(204).send();
     } catch (err) {
       console.error("Login error: ", err);
       res.status(500).json({ message: "Internal server error" });
@@ -179,6 +176,36 @@ class AuthController {
       res.status(401).json({ message: "Invalid refresh token" });
     }
   }
+
+  async getProfile(req: Request, res: Response) {
+    try {
+      const token = req.cookies.accessToken;
+      if (!token) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const decoded = jwt.verify(token, config.jwtSecret) as any;
+
+      const user = await UserModel.findById(decoded.id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.status(200).json({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        dob: user.dob,
+        gender: user.gender,
+        address: user.address,
+      });
+    } catch (err) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
   async logout(req: Request, res: Response): Promise<void> {
     try {
       const refreshToken = req.cookies["refreshToken"];
