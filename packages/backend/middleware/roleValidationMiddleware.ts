@@ -8,7 +8,7 @@ interface CustomJwtPayload extends JwtPayload {
   email: string;
 }
 
-class AuthMiddleware {
+class RoleMiddleware {
   private jwtSecret: string;
 
   constructor(jwtSecret: string) {
@@ -49,4 +49,4 @@ class AuthMiddleware {
   }
 }
 
-export default new AuthMiddleware(config.jwtSecret);
+export default new RoleMiddleware(config.jwtSecret);
