@@ -1,26 +1,65 @@
-// src/pages/LoginPage.tsx
+import { useNavigate } from 'react-router-dom';
+import { Button } from 'antd';
+import GeneralForm from '@/components/Form';
+import { FieldConfig } from '@/types/formTypes';
+import AuthLayout from '@/layout/authLayout';
+import axiosInstance from '@/shared/axiosInstance';
 
-import React from 'react';
-import { Form, Input, Button, notification } from 'antd';
-import axiosInstance from '../axiosInstance'; // Adjust the import path as needed
+const LoginForm = () => {
+  const navigate = useNavigate();
 
-// Define the type for login form data
-type LoginFormData = {
-  email: string;
-  password: string;
-};
+  const loginFields: FieldConfig<{ email: string; password: string; }>[] = [
+    {
+      name: 'email',
+      label: 'Email',
+      type: 'email',
+      rules: [
+        { required: true, message: 'Please enter your email' },
+        { type: 'email', message: 'Please enter a valid email' },
+      ],
+    },
+    {
+      name: 'password',
+      label: 'Password',
+      type: 'password',
+      rules: [
+        { required: true, message: 'Please enter your password' },
+      ],
+    },
+  ];
+  const handleLogin = async (values: { email: string; password: string; }) => {
+    const response = await axiosInstance.post('/auth/login', {
+      email: values.email,
+      password: values.password,
+    });
+    if (response.status === 204) {
+      navigate('/dashboard');
+      return response;
+    }
 
-const LoginPage: React.FC = () => {
-  const onFinish = async (values: LoginFormData) => {
-   
+
   };
 
   return (
-    <div className="login-page" style={{ maxWidth: '400px', margin: 'auto', padding: '20px' }}>
-      <h2>Login</h2>
-      
-    </div>
+    <AuthLayout>
+      <GeneralForm
+        fields={loginFields}
+        formTitle="Login"
+        onSubmit={handleLogin}
+        submitButtonText="Login"
+      />
+      <div className="text-center mt-4">
+        <p className="text-gray-600">Don’t have an account?</p>
+        <Button
+          type="link"
+          onClick={() => navigate('/register')}
+          style={{ padding: 0, fontSize: '16px' }}
+        >
+          Register
+        </Button>
+      </div>
+    </AuthLayout>
   );
 };
 
-export default LoginPage;
+export default LoginForm;

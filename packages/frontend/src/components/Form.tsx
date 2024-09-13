@@ -1,9 +1,9 @@
-
-import  { useState } from 'react';
-import { Form, Input, DatePicker, Button, notification, Typography } from 'antd';
-import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons';
-import moment from 'moment';
-import {ReusableFormProps} from '../types/formTypes'
+import { useState } from 'react';
+import { Form, Input, DatePicker, Button, Typography } from 'antd';
+import { EyeInvisibleOutlined, EyeOutlined, MailOutlined } from '@ant-design/icons';
+import { ReusableFormProps } from '@/types/formTypes';
+import showNotification from '@/utils/notification.util';
+import axios, {  AxiosResponse } from 'axios';
 
 const GeneralForm = <T,>({
   fields,
@@ -13,24 +13,32 @@ const GeneralForm = <T,>({
   formTitle,
 }: ReusableFormProps<T>) => {
   const [form] = Form.useForm();
-  const [passwordVisible, setPasswordVisible] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (values: T) => {
     setLoading(true);
     try {
-      await onSubmit(values);
-      notification.success({ message: 'Operation Successful' });
+      const response = (await onSubmit(values)) as AxiosResponse | undefined;
+      if (response) {
+        if (response.status === 204) {
+          showNotification('success', 'Login Successful');
+        } else {
+          showNotification('success', response.data?.message || 'Operation Successful');
+        }
+      } 
     } catch (error: unknown) {
-      notification.error({ message: 'An error occurred, please try again later.' });
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data?.message || 'An unexpected error occurred.';
+        showNotification('error', errorMessage);
+      } 
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="reusable-form" style={{ maxWidth: '600px', margin: 'auto', padding: '20px' }}>
-      <Typography.Title level={2}>{formTitle}</Typography.Title>
+    <div className="reusable-form max-w-2xl mx-auto p-5">
+      <Typography.Title level={2} className='text-center text-2xl font-bold'>{formTitle}</Typography.Title>
       <Form
         form={form}
         name="reusable-form"
@@ -43,13 +51,26 @@ const GeneralForm = <T,>({
             return (
               <Form.Item
                 key={field.name as string}
-                name={field.name}
-                label={field.label}
+                name={field.name as string}
+                label={<span className="font-semibold text-lg">{field.label}</span>} 
                 rules={field.rules}
               >
-                <DatePicker
-                  format="YYYY-MM-DD"
-                  defaultValue={initialValues[field.name] ? moment(initialValues[field.name]) : undefined}
+                <DatePicker className="h-12 text-base" format="YYYY-MM-DD" />
+              </Form.Item>
+            );
+          }
+          if (field.type === 'email') {
+            return (
+              <Form.Item
+                key={field.name as string}
+                name={field.name as string}
+                label={<span className="font-semibold text-lg">{field.label}</span>}
+                rules={field.rules}
+              >
+                <Input
+                  suffix={<MailOutlined />}
+                  type="email"
+                  className="h-12 text-base" 
                 />
               </Form.Item>
             );
@@ -59,14 +80,13 @@ const GeneralForm = <T,>({
             return (
               <Form.Item
                 key={field.name as string}
-                name={field.name}
-                label={field.label}
+                name={field.name as string}
+                label={<span className="font-semibold text-lg">{field.label}</span>}
                 rules={field.rules}
               >
                 <Input.Password
-                  type={passwordVisible === field.name ? 'text' : 'password'}
                   iconRender={visible => (visible ? <EyeOutlined /> : <EyeInvisibleOutlined />)}
-                  onClick={() => setPasswordVisible(prev => (prev === field.name ? null : field.name))}
+                  className="h-12 text-base" 
                 />
               </Form.Item>
             );
@@ -75,11 +95,11 @@ const GeneralForm = <T,>({
           return (
             <Form.Item
               key={field.name as string}
-              name={field.name}
-              label={field.label}
+              name={field.name as string}
+              label={<span className="font-semibold text-lg">{field.label}</span>}
               rules={field.rules}
             >
-              <Input type={field.type} />
+              <Input type={field.type} className="h-12 text-base" /> 
             </Form.Item>
           );
         })}
@@ -91,6 +111,7 @@ const GeneralForm = <T,>({
             block
             loading={loading}
             disabled={loading}
+            className="py-4 text-lg"
           >
             {submitButtonText}
           </Button>

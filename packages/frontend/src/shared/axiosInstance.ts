@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { redirect } from 'react-router-dom';
 
 interface FailedQueueItem {
   resolve: (value: Promise<unknown> | unknown) => void;
@@ -16,6 +17,7 @@ const axiosInstance = axios.create({
 
 let isRefreshing = false;
 let failedQueue: FailedQueueItem[] = [];
+let hasLoginRequest = false;
 
 const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue.forEach((prom: any) => {
@@ -30,6 +32,9 @@ const processQueue = (error: unknown, token: string | null = null) => {
 
 axiosInstance.interceptors.request.use(
   config => {
+    if (config.url === '/auth/login') {
+      hasLoginRequest = true;
+    }
     return config;
   },
   error => {
@@ -37,9 +42,11 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle 401, 403, and refresh token logic
 axiosInstance.interceptors.response.use(
   response => {
+    if (response.config.url === '/auth/login') {
+      hasLoginRequest = false;
+    }
     return response;
   },
   async error => {
@@ -48,13 +55,11 @@ axiosInstance.interceptors.response.use(
     if (error.response) {
       const { status } = error.response;
 
-      // Handle 403 Forbidden
       if (status === 403) {
-        window.location.href = '/403';
+        redirect('/403');
         return Promise.reject(error);
       }
 
-      // Handle 401 Unauthorized
       if (status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
 
@@ -64,9 +69,15 @@ axiosInstance.interceptors.response.use(
           });
         }
 
+        if (hasLoginRequest) {
+          hasLoginRequest = false;
+          return Promise.reject(error);
+        }
+
         isRefreshing = true;
         try {
-          const response = await axiosInstance.post('/refresh'); if (response.status === 200) {
+          const response = await axiosInstance.post('/auth/refresh'); 
+          if (response.status === 200) {
             const newToken = response.data.accessToken;
             localStorage.setItem('accessToken', newToken);
 
@@ -74,14 +85,12 @@ axiosInstance.interceptors.response.use(
 
             processQueue(null, newToken);
 
-            // Retry the original request
             return axiosInstance(originalRequest);
           }
         } catch (refreshError) {
-          // If the refresh token fails, log out the user and redirect to login
           processQueue(refreshError, null);
           localStorage.removeItem('accessToken');
-          window.location.href = '/login'; 
+          redirect('/login');
           return Promise.reject(refreshError);
         } finally {
           isRefreshing = false;
