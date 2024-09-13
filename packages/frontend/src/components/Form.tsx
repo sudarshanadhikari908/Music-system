@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Form, Input, DatePicker, Button, Typography } from 'antd';
+import { Form, Input, DatePicker, Button, Typography, Select } from 'antd';
 import { EyeInvisibleOutlined, EyeOutlined, MailOutlined } from '@ant-design/icons';
 import { ReusableFormProps } from '@/types/formTypes';
 import showNotification from '@/utils/notification.util';
@@ -11,6 +11,7 @@ const GeneralForm = <T,>({
   onSubmit,
   submitButtonText,
   formTitle,
+  layout = 'vertical',
 }: ReusableFormProps<T>) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -44,7 +45,7 @@ const GeneralForm = <T,>({
         name="reusable-form"
         initialValues={initialValues}
         onFinish={handleSubmit}
-        layout="vertical"
+        layout={layout}
       >
         {fields.map(field => {
           if (field.type === 'date') {
@@ -88,6 +89,24 @@ const GeneralForm = <T,>({
                   iconRender={visible => (visible ? <EyeOutlined /> : <EyeInvisibleOutlined />)}
                   className="h-12 text-base" 
                 />
+              </Form.Item>
+            );
+          }
+          if (field.type === 'select') {
+            return (
+              <Form.Item
+                key={field.name as string}
+                name={field.name as string}
+                label={<span className="font-semibold text-lg">{field.label}</span>}
+                rules={field.rules}
+              >
+                <Select className="h-12 text-base">
+                  {field.options?.map(option => (
+                    <Option key={option.value} value={option.value}>
+                      {option.label}
+                    </Option>
+                  ))}
+                </Select>
               </Form.Item>
             );
           }

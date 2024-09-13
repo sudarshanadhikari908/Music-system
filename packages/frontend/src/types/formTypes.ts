@@ -20,4 +20,5 @@ export interface ReusableFormProps<T> {
   onSubmit: (values: T) => Promise<AxiosResponse | void>;
   submitButtonText: string;
   formTitle: string;
+  layout: string | undefined;
 }
