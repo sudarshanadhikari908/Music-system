@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Form, Input, DatePicker, Button, Typography, Select } from 'antd';
+import { Form, Input, DatePicker, Button, Typography, Select, Col, Row } from 'antd';
 import { EyeInvisibleOutlined, EyeOutlined, MailOutlined } from '@ant-design/icons';
 import { ReusableFormProps } from '@/types/formTypes';
 import showNotification from '@/utils/notification.util';
@@ -42,86 +42,68 @@ const GeneralForm = <T,>({
       <Typography.Title level={2} className='text-center text-2xl font-bold'>{formTitle}</Typography.Title>
       <Form
         form={form}
+        scrollToFirstError
         name="reusable-form"
         initialValues={initialValues}
         onFinish={handleSubmit}
         layout={layout}
       >
-        {fields.map(field => {
-          if (field.type === 'date') {
-            return (
-              <Form.Item
-                key={field.name as string}
-                name={field.name as string}
-                label={<span className="font-semibold text-lg">{field.label}</span>} 
-                rules={field.rules}
-              >
-                <DatePicker className="h-12 text-base" format="YYYY-MM-DD" />
-              </Form.Item>
-            );
-          }
-          if (field.type === 'email') {
-            return (
-              <Form.Item
-                key={field.name as string}
-                name={field.name as string}
-                label={<span className="font-semibold text-lg">{field.label}</span>}
-                rules={field.rules}
-              >
-                <Input
-                  suffix={<MailOutlined />}
-                  type="email"
-                  className="h-12 text-base" 
-                />
-              </Form.Item>
-            );
-          }
-
-          if (field.type === 'password') {
-            return (
-              <Form.Item
-                key={field.name as string}
-                name={field.name as string}
-                label={<span className="font-semibold text-lg">{field.label}</span>}
-                rules={field.rules}
-              >
-                <Input.Password
-                  iconRender={visible => (visible ? <EyeOutlined /> : <EyeInvisibleOutlined />)}
-                  className="h-12 text-base" 
-                />
-              </Form.Item>
-            );
-          }
-          if (field.type === 'select') {
-            return (
-              <Form.Item
-                key={field.name as string}
-                name={field.name as string}
-                label={<span className="font-semibold text-lg">{field.label}</span>}
-                rules={field.rules}
-              >
-                <Select className="h-12 text-base">
-                  {field.options?.map(option => (
-                    <Option key={option.value} value={option.value}>
-                      {option.label}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            );
-          }
-
-          return (
-            <Form.Item
-              key={field.name as string}
-              name={field.name as string}
-              label={<span className="font-semibold text-lg">{field.label}</span>}
-              rules={field.rules}
-            >
-              <Input type={field.type} className="h-12 text-base" /> 
-            </Form.Item>
-          );
-        })}
+        <Row gutter={16}> 
+          {fields.map(field => (
+            <Col span={field.colSpan || 24} key={field.name as string}> 
+              {field.type === 'date' ? (
+                <Form.Item
+                  name={field.name as string}
+                  label={<span className="font-semibold text-lg">{field.label}</span>} 
+                  rules={field.rules}
+                >
+                  <DatePicker className="h-12 text-base" format="YYYY-MM-DD" />
+                </Form.Item>
+              ) : field.type === 'email' ? (
+                <Form.Item
+                  name={field.name as string}
+                  label={<span className="font-semibold text-lg">{field.label}</span>}
+                  rules={field.rules}
+                >
+                  <Input suffix={<MailOutlined />} type="email" className="h-12 text-base" />
+                </Form.Item>
+              ) : field.type === 'password' ? (
+                <Form.Item
+                  name={field.name as string}
+                  label={<span className="font-semibold text-lg">{field.label}</span>}
+                  rules={field.rules}
+                >
+                  <Input.Password
+                    iconRender={visible => (visible ? <EyeOutlined /> : <EyeInvisibleOutlined />)}
+                    className="h-12 text-base" 
+                  />
+                </Form.Item>
+              ) : field.type === 'select' ? (
+                <Form.Item
+                  name={field.name as string}
+                  label={<span className="font-semibold text-lg">{field.label}</span>}
+                  rules={field.rules}
+                >
+                  <Select className="h-12 text-base">
+                    {field.options?.map(option => (
+                      <Select.Option key={option.value} value={option.value}>
+                        {option.label}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              ) : (
+                <Form.Item
+                  name={field.name as string}
+                  label={<span className="font-semibold text-lg">{field.label}</span>}
+                  rules={field.rules}
+                >
+                  <Input type={field.type} className="h-12 text-base" />
+                </Form.Item>
+              )}
+            </Col>
+          ))}
+        </Row>
 
         <Form.Item>
           <Button
@@ -139,5 +121,5 @@ const GeneralForm = <T,>({
     </div>
   );
 };
-
+ 
 export default GeneralForm;

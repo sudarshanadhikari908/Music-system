@@ -41,18 +41,19 @@ const LoginForm = () => {
   };
 
   return (
-    <AuthLayout>
+    <AuthLayout width={'md'}>
       <GeneralForm
         fields={loginFields}
         formTitle="Login"
         onSubmit={handleLogin}
         submitButtonText="Login"
+        layout='vertical'
       />
       <div className="text-center mt-4">
         <p className="text-gray-600">Don’t have an account?</p>
         <Button
           type="link"
-          onClick={() => navigate('/register')}
+          onClick={() => navigate('/auth/register')}
           style={{ padding: 0, fontSize: '16px' }}
         >
           Register

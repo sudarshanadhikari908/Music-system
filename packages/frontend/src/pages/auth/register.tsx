@@ -28,7 +28,7 @@ const RegisterForm = () => {
         { required: true, message: 'First name is required' },
         { pattern: /^[A-Za-z]+$/, message: 'First name should contain only alphabetic characters' },
       ],
-      wrapperCol: { span: 12 },
+      colSpan: 12, // Adjust column span to control field width
     },
     {
       name: 'last_name',
@@ -38,7 +38,7 @@ const RegisterForm = () => {
         { required: true, message: 'Last name is required' },
         { pattern: /^[A-Za-z]+$/, message: 'Last name should contain only alphabetic characters' },
       ],
-      wrapperCol: { span: 12 },
+      colSpan: 12,
     },
     {
       name: 'username',
@@ -48,7 +48,7 @@ const RegisterForm = () => {
         { required: true, message: 'Username is required' },
         { min: 3, message: 'Username must be at least 3 characters long' },
       ],
-      wrapperCol: { span: 12 },
+      colSpan: 12,
     },
     {
       name: 'email',
@@ -58,7 +58,7 @@ const RegisterForm = () => {
         { required: true, message: 'Email is required' },
         { type: 'email', message: 'Please enter a valid email' },
       ],
-      wrapperCol: { span: 12 },
+      colSpan: 12,
     },
     {
       name: 'password',
@@ -68,7 +68,7 @@ const RegisterForm = () => {
         { required: true, message: 'Password is required' },
         { min: 6, message: 'Password must be at least 6 characters long' },
       ],
-      wrapperCol: { span: 12 },
+      colSpan: 12,
     },
     {
       name: 'mobile_number',
@@ -78,7 +78,7 @@ const RegisterForm = () => {
         { pattern: /^[9][0-9]{9}$/, message: 'Phone number must be a valid 10-digit Nepali number starting with 9' },
         { required: false },
       ],
-      wrapperCol: { span: 12 },
+      colSpan: 12,
     },
     {
       name: 'dob',
@@ -88,7 +88,7 @@ const RegisterForm = () => {
         { type: 'date', message: 'Date of birth must be a valid date' },
         { required: false },
       ],
-      wrapperCol: { span: 12 },
+      colSpan: 12,
     },
     {
       name: 'gender',
@@ -99,20 +99,7 @@ const RegisterForm = () => {
         { value: 'F', label: 'Female' },
         { value: 'O', label: 'Other' },
       ],
-      rules: [
-        { required: false },
-      ],
-      wrapperCol: { span: 12 },
-    },
-    {
-      name: 'address',
-      label: 'Address',
-      type: 'text',
-      rules: [
-        { max: 255, message: 'Address must not exceed 255 characters' },
-        { required: false },
-      ],
-      wrapperCol: { span: 12 },
+      colSpan: 12,
     },
     {
       name: 'role',
@@ -126,8 +113,7 @@ const RegisterForm = () => {
       rules: [
         { required: true, message: 'Role is required' },
       ],
-      wrapperCol: { span: 12 },
-
+      colSpan: 12,
     },
   ];
 
@@ -151,12 +137,13 @@ const RegisterForm = () => {
   };
 
   return (
-    <AuthLayout>
+    <AuthLayout width={'xl'}>
       <GeneralForm
         fields={registrationFields}
         formTitle="Register"
         onSubmit={handleRegister}
         submitButtonText="Register"
+        layout='vertical'
       />
       <div className="text-center mt-4">
         <p className="text-gray-600">Already have an account?</p>

@@ -3,14 +3,15 @@ import { Card } from 'antd';
 
 interface AuthLayoutProps {
   children: ReactNode;
+  width: string
 }
 
-const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
+const AuthLayout: React.FC<AuthLayoutProps> = ({ children, width }) => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 p-4">
       <Card
         bordered={false}
-        className="max-w-md w-full rounded-2xl shadow-xl"
+        className={`max-w-${width} w-full rounded-2xl shadow-xl`}
       >
         {children}
       </Card>
