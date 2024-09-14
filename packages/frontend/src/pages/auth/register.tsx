@@ -4,6 +4,7 @@ import GeneralForm from '@/components/Form';
 import { FieldConfig } from '@/types/formTypes';
 import AuthLayout from '@/layout/authLayout';
 import axiosInstance from '@/shared/axiosInstance';
+import moment from 'moment';
 
 const RegisterForm = () => {
   const navigate = useNavigate();
@@ -80,16 +81,7 @@ const RegisterForm = () => {
       ],
       colSpan: 12,
     },
-    {
-      name: 'dob',
-      label: 'Date of Birth',
-      type: 'date',
-      rules: [
-        { type: 'date', message: 'Date of birth must be a valid date' },
-        { required: false },
-      ],
-      colSpan: 12,
-    },
+ 
     {
       name: 'gender',
       label: 'Gender',
@@ -115,6 +107,16 @@ const RegisterForm = () => {
       ],
       colSpan: 12,
     },
+    {
+      name: 'dob',
+      label: 'Date of Birth',
+      type: 'date',
+      rules: [
+        { type: 'date', message: 'Date of birth must be a valid date' },
+        { required: false },
+      ],
+      colSpan: 12,
+    },
   ];
 
   const handleRegister = async (values: {
@@ -129,15 +131,20 @@ const RegisterForm = () => {
     address?: string;
     role: string;
   }) => {
-      const response = await axiosInstance.post('/auth/register', values);
-      if (response.status === 201) { 
-        navigate('/login');
+    const formattedValues = {
+      ...values,
+      dob: values.dob ? moment(values.dob).format('YYYY-MM-DD') : undefined,
+    };
+  
+      const response = await axiosInstance.post('/auth/register', formattedValues);
+      if (response.status === 201) {
+        navigate('/auth/login');
         return response;
       }
   };
 
   return (
-    <AuthLayout width={'xl'}>
+    <AuthLayout width='xl'>
       <GeneralForm
         fields={registrationFields}
         formTitle="Register"
@@ -149,7 +156,7 @@ const RegisterForm = () => {
         <p className="text-gray-600">Already have an account?</p>
         <Button
           type="link"
-          onClick={() => navigate('/login')}
+          onClick={() => navigate('/auth/login')}
           style={{ padding: 0, fontSize: '16px' }}
         >
           Login
