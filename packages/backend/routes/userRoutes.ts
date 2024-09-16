@@ -15,7 +15,7 @@ router.get('/users', AuthMiddleware.authenticateToken,RoleMiddleware.authorize([
 router.get('/user/:id',AuthMiddleware.authenticateToken,RoleMiddleware.authorize(['super_admin']), UserController.getUserById);
 router.post('/user/create',AuthMiddleware.authenticateToken,RoleMiddleware.authorize(['super_admin']), UserValidator.getUserValidationRules(), UserValidator.validateMiddleware, UserController.createUser)
 
-router.put('/user/:id',AuthMiddleware.authenticateToken,RoleMiddleware.authorize(['super_admin']), UserValidator.getUserValidationRules(), UserValidator.validateMiddleware, UserController.updateUser);
+router.put('/user/:id',AuthMiddleware.authenticateToken,RoleMiddleware.authorize(['super_admin']), UserValidator.getUserUpdateValidationRules(), UserValidator.validateMiddleware, UserController.updateUser);
 
 router.delete('/user/:id',AuthMiddleware.authenticateToken, RoleMiddleware.authorize(['super_admin']),UserController.deleteUser);
 

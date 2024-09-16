@@ -21,4 +21,5 @@ export interface ReusableFormProps<T> {
   submitButtonText: string;
   formTitle: string;
   layout: string | undefined;
+  textRight?: boolean;
 }

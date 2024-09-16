@@ -3,9 +3,16 @@ export interface UserProfile {
     username: string;
     email: string;
     role: string;
-    firstName: string;
-    lastName: string;
+    first_name: string;
+    last_name: string;
     dob?: string | null; 
     gender?: 'M' | 'F' | 'O' | null; 
     address?: string | null; 
+  }
+
+  export interface UsersTable {
+    current: number;
+    data: UserProfile[];
+    pageSize: number;
+    total: number;
   }

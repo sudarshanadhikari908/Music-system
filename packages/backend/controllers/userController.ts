@@ -104,15 +104,17 @@ class UserController {
         res.status(404).json({ message: "User not found" });
         return;
       }
-      const existingUser = await User.findByEmail(userData?.email);
-      if (existingUser.length > 0) {
-        res
-          .status(400)
-          .json({ message: "User with this email already exists." });
-        return;
+      const { password, ...updateData } = userData;
+      if (userData?.email !== user.email) {
+        const existingUser = await User.findByEmail(userData?.email);
+        if (existingUser.length > 0) {
+          res
+            .status(400)
+            .json({ message: "User with this email already exists." });
+          return;
+        }
       }
-
-      const updatedUser = await User.updateById(userId, userData);
+      const updatedUser = await User.updateById(userId, updateData);
 
       if (updatedUser) {
         res.json({ message: "User updated successfully", user: updatedUser });

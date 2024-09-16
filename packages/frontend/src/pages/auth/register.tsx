@@ -108,6 +108,12 @@ const RegisterForm = () => {
       colSpan: 12,
     },
     {
+      name: 'address',
+      label: 'Address',
+      type: 'text',
+      colSpan: 12,
+    },
+    {
       name: 'dob',
       label: 'Date of Birth',
       type: 'date',

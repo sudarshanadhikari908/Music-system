@@ -156,7 +156,7 @@ WHERE id = ?`;
   static async updateById(id: number, data: Partial<Record<string, any>>): Promise<boolean> {
     const allowedFields = [
       'first_name', 'last_name', 'username', 'email', 'role',
-      'mobile_number', 'dob', 'gender', 'address', 'password'
+      'mobile_number', 'dob', 'gender', 'address'
     ];
   
     const fieldsToUpdate = Object.keys(data).filter(key => allowedFields.includes(key));
@@ -169,7 +169,6 @@ WHERE id = ?`;
       data.password = await hashPassword(data.password);
     }
   
-    // Create the SET clause for the SQL query
     const setClause = fieldsToUpdate.map(field => `${field} = ?`).join(', ');
   
     const query = `UPDATE User SET ${setClause}, updated_at = NOW() WHERE id = ?`;
