@@ -16,7 +16,7 @@ const UpdateUser: React.FC = () => {
   );
   const formattedUserDetail = {
     ...userDetail,
-    dob: userDetail?.dob ? moment(userDetail.dob) : null,
+    dob: userDetail?.dob ? moment(userDetail.dob).format("YYYY-MM-DD") : undefined,
   };
   const navigate = useNavigate();
 

@@ -159,7 +159,7 @@ class ArtistController {
       const csv = parse(artists, { fields });
       res.header("Content-Type", "text/csv");
       res.attachment("artists.csv");
-      return res.send(csv);
+      return res.status(200).send(csv);
     } catch (error) {
       console.error("Error exporting artists:", error);
       return res.status(500).json({ message: "Server error", error });

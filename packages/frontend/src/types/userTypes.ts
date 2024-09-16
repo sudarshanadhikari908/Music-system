@@ -8,6 +8,7 @@ export interface UserProfile {
     dob?: string | null; 
     gender?: 'M' | 'F' | 'O' | null; 
     address?: string | null; 
+    mobile_number?: string;
   }
 
   export interface UsersTable {

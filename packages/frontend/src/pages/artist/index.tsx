@@ -83,8 +83,44 @@ const Artists: React.FC = () => {
   };
 
   const handleEdit = (record: Artist) => {
-    navigate(`/user/update/${record?.id}`);
+    navigate(`/artist/update/${record?.id}`);
   };
+
+  const exportFile = async () => {
+    try {
+      const response = await axiosInstance.post(`/artist/export`,{
+        responseType: 'blob'
+      });
+      console.log(response, response?.status)
+      if (response?.status === 200) {
+        const blob = new Blob([response.data], { type: 'text/csv' });
+        const downloadUrl = window.URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        
+        link.download = 'artists.csv';
+        
+        document.body.appendChild(link);
+        link.click();
+    
+        showNotification(
+          "success",
+          response.data?.message || "Operation Successful"
+        );
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage =
+          error.response?.data?.message || "An unexpected error occurred.";
+        showNotification("error", errorMessage);
+      }
+    }
+  };
+
+  const importFile = ()=>{
+
+  }
 
   const handleDelete = async (record: Artist) => {
     try {
@@ -102,23 +138,29 @@ const Artists: React.FC = () => {
     }
   };
 
-  const onRowClick = (id: number)=>{
-    navigate(`/artist/${id}`)
-  }
+  const onRowClick = (id: number) => {
+    navigate(`/artist/${id}`);
+  };
 
-  const pageChange = ({pageSize, currentPage}:PaginationType)=>{
-    dispatch(getAllArtist(`/artists/?page=${currentPage}&pageSize=${pageSize}`))
-  }
+  const pageChange = ({ pageSize, currentPage }: PaginationType) => {
+    dispatch(
+      getAllArtist(`/artists/?page=${currentPage}&pageSize=${pageSize}`)
+    );
+  };
 
   useEffect(() => {
     dispatch(getAllArtist("/artists"));
   }, []);
-  
+
   return (
     <MainLayout>
       <div className="p-4">
         <h1 className="text-xl mb-4">Artist List</h1>
-        <div className="mb-4 flex justify-end">
+        <div className="flex">
+          <Button onClick={importFile}>Import</Button>
+          <Button onClick={exportFile}>Export</Button>
+        </div>
+        <div className="flex justify-end mb-4">
           <Button type="primary" onClick={handleCreate}>
             <PlusCircleOutlined className="mr-2" />
             Create

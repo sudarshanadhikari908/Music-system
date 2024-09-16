@@ -57,7 +57,7 @@ axiosInstance.interceptors.response.use(
       const { status } = error.response;
 
       if (status === 403) {
-        redirect('/403');
+        window.location.href ='/403'
         return Promise.reject(error);
       }
 
@@ -91,7 +91,7 @@ axiosInstance.interceptors.response.use(
         } catch (refreshError) {
           processQueue(refreshError, null);
           localStorage.removeItem('accessToken');
-          redirect('/login');
+          window.location.href = '/auth/login'
           return Promise.reject(refreshError);
         } finally {
           isRefreshing = false;

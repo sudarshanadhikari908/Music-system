@@ -25,7 +25,7 @@ const UserDetail: React.FC = () => {
           <div className="flex justify-start mb-8">
             <Avatar
               size={120}
-              src={`https://joeschmoe.io/api/v1/${userDetail?.username}`}
+              src={``}
               className="border-4 border-blue-500"
             />
           </div>

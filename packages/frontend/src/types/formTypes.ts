@@ -1,18 +1,21 @@
 import { AxiosResponse } from "axios";
 
 
-export type FieldType = 'text' | 'password' | 'date' | 'email';
+export type FieldType = 'text' | 'password' | 'date' | 'email' | 'number' | 'select' |'textarea';
 
 export interface FieldConfig<T> {
   name: keyof T;
   label: string;
   type: FieldType;
-  rules: {
-    required?: boolean;
-    message: string;
-    type?: string;
-  }[];
+  options?: {
+    value: string;
+    label: string;
+  }[]; 
+  colSpan?: number;
+  rules?: any;
+  initialValues?: any;
 }
+
 
 export interface ReusableFormProps<T> {
   fields: FieldConfig<T>[];
@@ -20,6 +23,6 @@ export interface ReusableFormProps<T> {
   onSubmit: (values: T) => Promise<AxiosResponse | void>;
   submitButtonText: string;
   formTitle: string;
-  layout: string | undefined;
+  layout?: string;
   textRight?: boolean;
 }

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Table, Button, Pagination, Select } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { PaginationType } from "@/types/paginationType";
+import RoleCheck from "@/hoc/RoleCheck";
 
 interface CustomTableProps {
   data: any[];
@@ -24,7 +25,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
   loading,
   pageChange,
   onRowClick,
-  total
+  total,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -39,7 +40,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
   };
 
   const handleRowClick = (record: any) => {
-    onRowClick(record?.id); 
+    onRowClick(record?.id);
   };
 
   const actionColumn = {
@@ -47,22 +48,26 @@ const CustomTable: React.FC<CustomTableProps> = ({
     key: "actions",
     render: (text: any, record: any) => (
       <>
-        <Button
-          icon={<EditOutlined />}
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit(record);
-          }}
-          className="mr-2"
-        />
-        <Button
-          icon={<DeleteOutlined />}
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(record);
-          }}
-          danger
-        />
+        {/* <RoleCheck> */}
+          <Button
+            icon={<EditOutlined />}
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(record);
+            }}
+            className="mr-2"
+          />
+        {/* </RoleCheck> */}
+        {/* <RoleCheck> */}
+          <Button
+            icon={<DeleteOutlined />}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(record);
+            }}
+            danger
+          />
+        {/* </RoleCheck> */}
       </>
     ),
   };
@@ -80,7 +85,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
         rowKey={(record) => record.id}
         onRow={(record) => ({
           onClick: () => handleRowClick(record),
-          className: 'cursor-pointer hover:bg-gray-100',
+          className: "cursor-pointer hover:bg-gray-100",
         })}
         loading={loading}
       />
