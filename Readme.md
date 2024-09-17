@@ -37,9 +37,13 @@ JWT_SECRET: A secret key for signing JWT tokens (e.g., a secure random string)
 ## Frontend (packages/frontend)
 Create a .env file in the packages/frontend directory and include the following key:
 
+```bash
 VITE_API_URL: The URL to your backend API (e.g., http://localhost:5000/music-system)
+```
 
 ## Run the project:
 
+```bash
 npm start
+```
 
