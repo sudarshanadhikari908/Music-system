@@ -23,13 +23,16 @@ You need to create .env files for both the backend and frontend.
 ## Backend (packages/backend)
 Create a .env file in the packages/backend directory and include the following keys:
 
+### Environment Variables
+
+```bash
 PORT: Port on which the backend server runs (e.g., 5000)
 DB_HOST: The host for your MySQL database (e.g., localhost)
 DB_USER: Your MySQL username
 DB_PASSWORD: Your MySQL password
 DB_DATABASE: The name of your MySQL database (e.g., artist_management_db)
 JWT_SECRET: A secret key for signing JWT tokens (e.g., a secure random string)
-Frontend (packages/frontend)
+```
 
 ## Frontend (packages/frontend)
 Create a .env file in the packages/frontend directory and include the following key:
