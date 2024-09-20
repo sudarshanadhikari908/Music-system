@@ -106,6 +106,7 @@ const UserPage: React.FC = () => {
         onEdit={handleEdit}
         onDelete={handleDelete}
         onRowClick={onRowClick}
+        allowedRoles={['super_admin']}
         loading={usersLoading}
         pageChange={pageChange}
         total={users?.total}

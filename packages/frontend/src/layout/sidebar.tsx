@@ -16,10 +16,15 @@ const Sidebar: React.FC = () => {
   };
 
   useEffect(() => {
-    if (location.pathname === "/") {
-      setSelectedKey("1");
-    } else if (location.pathname === "/artists") {
-      setSelectedKey("2");
+    switch (location.pathname) {
+      case "/":
+        setSelectedKey("1");
+        break;
+      case "/artists":
+        setSelectedKey("2");
+        break;
+      default:
+        setSelectedKey(""); 
     }
   }, [location.pathname]);
 
@@ -44,7 +49,8 @@ const Sidebar: React.FC = () => {
       <Menu
         mode="inline"
         selectedKeys={[selectedKey]}
-        className="h-full border-none text-white"
+        className="h-full border-none"
+       
       >
         <RoleCheck allowedRoles={["super_admin"]}>
           <Menu.Item key="1" icon={<UserOutlined />}>

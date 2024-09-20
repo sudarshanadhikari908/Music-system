@@ -191,7 +191,7 @@ const Artists: React.FC = () => {
       <div className="p-4">
         <h1 className="text-xl mb-4">Artist List</h1>
         <div className="flex">
-          <RoleCheck allowedRoles={['artist_manager']}>
+          <RoleCheck allowedRoles={["artist_manager"]}>
             <Upload
               beforeUpload={() => false}
               onChange={handleFileChange}
@@ -223,17 +223,20 @@ const Artists: React.FC = () => {
           loading={artistsLoading}
           pageChange={pageChange}
           total={artists?.total}
+          allowedRoles={['artist_manager']}
           onRowClick={onRowClick}
           additionalAction={(record: Artist) => (
-            <Button
-              icon={<NotificationOutlined />}
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate(`/artists/${record?.id}/songs`);
-              }}
-            >
-              Songs
-            </Button>
+            <RoleCheck allowedRoles={['super_admin','artist_manager', 'artist']}>
+              <Button
+                icon={<NotificationOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/artists/${record?.id}/songs`);
+                }}
+              >
+                Songs
+              </Button>
+            </RoleCheck>
           )}
         />
       </div>

@@ -4,6 +4,9 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { PaginationType } from "@/types/paginationType";
 import RoleCheck from "@/hoc/RoleCheck";
 
+
+type Role = "super_admin" | "artist_manager" | "artist";
+
 interface CustomTableProps {
   data: any[];
   columns: any[];
@@ -13,7 +16,9 @@ interface CustomTableProps {
   pageChange: ({ currentPage, pageSize }: PaginationType) => void;
   total: number;
   onRowClick: (record: any) => void;
-  additionalAction?: (record: any) => React.ReactNode
+  additionalAction?: (record: any) => React.ReactNode;
+  allowedRoles: Role[];
+
 }
 
 const { Option } = Select;
@@ -27,7 +32,8 @@ const CustomTable: React.FC<CustomTableProps> = ({
   pageChange,
   onRowClick,
   total,
-  additionalAction
+  additionalAction,
+  allowedRoles
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -50,7 +56,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
     key: "actions",
     render: (text: any, record: any) => (
       <>
-        {/* <RoleCheck> */}
+        <RoleCheck allowedRoles={allowedRoles}>
           <Button
             icon={<EditOutlined />}
             onClick={(e) => {
@@ -59,8 +65,8 @@ const CustomTable: React.FC<CustomTableProps> = ({
             }}
             className="mr-2"
           />
-        {/* </RoleCheck> */}
-        {/* <RoleCheck> */}
+        </RoleCheck>
+        <RoleCheck allowedRoles={allowedRoles}>
           <Button
             icon={<DeleteOutlined />}
             onClick={(e) => {
@@ -70,7 +76,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
             danger
             className="mr-2"
           />
-        {/* </RoleCheck> */}
+        </RoleCheck>
         {additionalAction && additionalAction(record)}
       </>
     ),

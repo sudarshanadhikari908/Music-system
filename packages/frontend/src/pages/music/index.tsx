@@ -1,4 +1,5 @@
 import CustomTable from "@/components/Table";
+import RoleCheck from "@/hoc/RoleCheck";
 import MainLayout from "@/layout/mainLayout";
 import axiosInstance from "@/shared/axiosInstance";
 import { getAllMusic } from "@/store/music/action";
@@ -6,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/store/redux-Hooks";
 import { Song } from "@/types/musicTypes";
 import { PaginationType } from "@/types/paginationType";
 import showNotification from "@/utils/notification.util";
-import { PlusCircleOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined } from "@ant-design/icons";
 
 import { Button } from "antd";
 import { ColumnsType } from "antd/es/table";
@@ -18,7 +19,7 @@ const Musics: React.FC = () => {
   const dispatch = useAppDispatch();
   const { artistId } = useParams();
   const navigate = useNavigate();
-  const {songs, songsLoading} = useAppSelector((state)=>state.song)
+  const { songs, songsLoading } = useAppSelector((state) => state.song);
 
   const columns: ColumnsType<Song> = [
     {
@@ -57,7 +58,9 @@ const Musics: React.FC = () => {
 
   const handleDelete = async (record: Song) => {
     try {
-      const response = await axiosInstance.delete(`/artists/${artistId}/songs/${record?.id}`);
+      const response = await axiosInstance.delete(
+        `/artists/${artistId}/songs/${record?.id}`
+      );
       if (response?.status === 200) {
         showNotification("success", response?.data?.message);
         dispatch(getAllMusic(`/artists/${artistId}/songs`));
@@ -91,18 +94,21 @@ const Musics: React.FC = () => {
     <MainLayout>
       <div className="p-4">
         <h1 className="text-xl mb-4">Songs List</h1>
-        <div className="mb-4 flex justify-end">
-          <Button type="primary" onClick={handleCreate}>
-            <PlusCircleOutlined className="mr-2" />
-            Create
-          </Button>
-        </div>
+        <RoleCheck allowedRoles={["artist"]}>
+          <div className="mb-4 flex justify-end">
+            <Button type="primary" onClick={handleCreate}>
+              <PlusCircleOutlined className="mr-2" />
+              Create
+            </Button>
+          </div>
+        </RoleCheck>
         <CustomTable
           data={songs?.data || []}
           columns={columns}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onRowClick={onRowClick}
+          allowedRoles={['artist']}
           loading={songsLoading}
           pageChange={pageChange}
           total={songs?.total}
