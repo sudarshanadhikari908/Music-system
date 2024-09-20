@@ -14,9 +14,10 @@ const UpdateUser: React.FC = () => {
   const { userDetail, userDetailLoading } = useAppSelector(
     (state) => state.user
   );
+
   const formattedUserDetail = {
     ...userDetail,
-    dob: userDetail?.dob ? moment(userDetail.dob).format("YYYY-MM-DD") : undefined,
+    dob: userDetail?.dob ? moment(userDetail.dob) : null,
   };
   const navigate = useNavigate();
 
@@ -127,10 +128,7 @@ const UpdateUser: React.FC = () => {
       name: "dob",
       label: "Date of Birth",
       type: "date",
-      rules: [
-        { type: "date", message: "Date of birth must be a valid date" },
-        { required: false },
-      ],
+      rules: [{ type: "date", message: "Date of birth must be a valid date" }],
       colSpan: 12,
     },
   ];
@@ -166,7 +164,7 @@ const UpdateUser: React.FC = () => {
   }, [id]);
   return (
     <MainLayout>
-      {!userDetailLoading && userDetail && (
+      {(!userDetailLoading && userDetail) && (
         <>
           <GeneralForm
             fields={updateUserFields}
