@@ -97,18 +97,14 @@ class ArtistController {
     
     try {
       const file = req.file;
-      console.log(file, req?.file, "K cha t esma?")
-      console.log(file?.mimetype, file?.path, "File details for debugging"); // Log MIME type for debugging
 
-      // Supported file types for CSV, XLS, and XLSX
       const supportedMimeTypes = [
         "text/csv",
         "application/csv",
-        "application/vnd.ms-excel", // For CSV and XLS
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" // For XLSX
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 
       ];
 
-      // Check if file exists and validate MIME type
       if (!file || !supportedMimeTypes.includes(file.mimetype)) {
         return res.status(400).json({ message: "Please upload a valid CSV, XLS, or XLSX file." });
       }
