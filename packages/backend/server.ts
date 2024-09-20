@@ -6,6 +6,7 @@ import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import artistRoutes from './routes/artistRoutes';
 import songRoutes from './routes/songRoutes';
+import swaggerDocs from './utils/swagger';
 
 const app: Application = express();
 
@@ -20,4 +21,7 @@ app.use('/music-system', songRoutes);
 
 
 const PORT: number = Number(process.env.PORT) || 5000;
-app.listen(PORT, () => console.log(`Backend is running on port ${PORT}`));
+app.listen(PORT, () =>{
+    swaggerDocs(app,PORT)
+     console.log(`Backend is running on port ${PORT}`)
+    });
