@@ -4,6 +4,8 @@ import AuthMiddleware from "../middleware/authenticateToken";
 import RoleMiddleware from "../middleware/roleValidationMiddleware";
 import FileImportMiddleware from "../middleware/fileUploadMiddleware";
 import ArtistValidator from "../validators/artistValidator";
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 
 const router = express.Router();
 
@@ -34,9 +36,11 @@ router.post(
   "/artist/import",
   AuthMiddleware.authenticateToken,
   RoleMiddleware.authorize(["artist_manager"]),
-  FileImportMiddleware.singleFile(),
+  upload.single('file'),
   ArtistController.importArtists
 );
+
+
 router.post(
   "/artist/export",
   AuthMiddleware.authenticateToken,

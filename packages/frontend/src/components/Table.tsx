@@ -13,6 +13,7 @@ interface CustomTableProps {
   pageChange: ({ currentPage, pageSize }: PaginationType) => void;
   total: number;
   onRowClick: (record: any) => void;
+  additionalAction?: (record: any) => React.ReactNode
 }
 
 const { Option } = Select;
@@ -26,6 +27,7 @@ const CustomTable: React.FC<CustomTableProps> = ({
   pageChange,
   onRowClick,
   total,
+  additionalAction
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -66,8 +68,10 @@ const CustomTable: React.FC<CustomTableProps> = ({
               onDelete(record);
             }}
             danger
+            className="mr-2"
           />
         {/* </RoleCheck> */}
+        {additionalAction && additionalAction(record)}
       </>
     ),
   };

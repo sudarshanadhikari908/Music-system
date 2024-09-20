@@ -12,6 +12,10 @@ import UserDetail from "./pages/users/userDetail";
 import CreateArtist from "./pages/artist/create";
 import ArtistDetail from "./pages/artist/artistDetail";
 import UpdateArtist from "./pages/artist/update";
+import Musics from "./pages/music";
+import CreateMusic from "./pages/music/create";
+import UpdateMusic from "./pages/music/update";
+import SongDetail from "./pages/music/musicDetail";
 
 const AppRoutes = () => {
   return (
@@ -28,7 +32,11 @@ const AppRoutes = () => {
         <Route path="/artist/create" element={<ProtectedRoute element={<CreateArtist />} />} />
         <Route path="/artist/:id" element={<ProtectedRoute element={<ArtistDetail />} />} />
         <Route path="/artist/update/:id" element={<ProtectedRoute element={<UpdateArtist />} />} />
-
+        <Route path="/artists/:artistId/songs" element={<ProtectedRoute element={<Musics />} />} />
+        <Route path="/artists/:artistId/song/create" element={<ProtectedRoute element={<Musics />} />} />
+        <Route path="/artist/:artistId/song/create" element={<ProtectedRoute element={<CreateMusic />} />} />
+        <Route path="/artist/:artistId/song/update/:songId" element={<ProtectedRoute element={<UpdateMusic />} />} />
+        <Route path="/artist/:artistId/song/:songId" element={<ProtectedRoute element={<SongDetail />} />} />
 
       </Routes>
     </Router>

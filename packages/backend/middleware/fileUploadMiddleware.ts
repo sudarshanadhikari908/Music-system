@@ -37,9 +37,7 @@ class FileImportMiddleware {
   public static singleFile() {
     return (req: Request, res: Response, next: NextFunction) => {
       FileImportMiddleware.upload.single("file")(req, res, (err: any) => {
-        console.log(req.body);
-        console.log(req.file);
-        if (err) {
+       if (err) {
           return res
             .status(400)
             .json({ message: "File upload failed.", error: err.message });

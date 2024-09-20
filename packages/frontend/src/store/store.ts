@@ -1,12 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userSlice from './user/slices'
 import artistSlice from './artist/slices'
+import songSlice from './music/slices'
+
 
 
 export const store = configureStore({
   reducer: {
    user: userSlice,
-   artist: artistSlice
+   artist: artistSlice,
+   song: songSlice
   },
 });
 

@@ -1,4 +1,5 @@
 import CustomTable from "@/components/Table";
+import RoleCheck from "@/hoc/RoleCheck";
 import MainLayout from "@/layout/mainLayout";
 import axiosInstance from "@/shared/axiosInstance";
 import { getAllArtist } from "@/store/artist/action";
@@ -6,15 +7,16 @@ import { useAppDispatch, useAppSelector } from "@/store/redux-Hooks";
 import { Artist } from "@/types/artistTypes";
 import { PaginationType } from "@/types/paginationType";
 import showNotification from "@/utils/notification.util";
-import { PlusCircleOutlined } from "@ant-design/icons";
-import { Button } from "antd";
+import { PlusCircleOutlined, NotificationOutlined } from "@ant-design/icons";
+import { Button, Upload } from "antd";
 import axios from "axios";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Artists: React.FC = () => {
   const dispatch = useAppDispatch();
   const { artists, artistsLoading } = useAppSelector((state) => state.artist);
+  const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const columns = [
@@ -88,22 +90,20 @@ const Artists: React.FC = () => {
 
   const exportFile = async () => {
     try {
-      const response = await axiosInstance.post(`/artist/export`,{
-        responseType: 'blob'
+      const response = await axiosInstance.post(`/artist/export`, {
+        responseType: "blob",
       });
-      console.log(response, response?.status)
       if (response?.status === 200) {
-        const blob = new Blob([response.data], { type: 'text/csv' });
+        const blob = new Blob([response.data], { type: "text/csv" });
         const downloadUrl = window.URL.createObjectURL(blob);
-        
-        const link = document.createElement('a');
+
+        const link = document.createElement("a");
         link.href = downloadUrl;
-        
-        link.download = 'artists.csv';
-        
+        link.download = "artists.csv";
+
         document.body.appendChild(link);
         link.click();
-    
+
         showNotification(
           "success",
           response.data?.message || "Operation Successful"
@@ -118,9 +118,43 @@ const Artists: React.FC = () => {
     }
   };
 
-  const importFile = ()=>{
+  const handleFileChange = (info: any) => {
+    const file = info.fileList[0]?.originFileObj;
+    importFile(file);
+  };
 
-  }
+  const importFile = async (file: File | null) => {
+    if (!file) {
+      showNotification("error", "No file selected. Please select a file first");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("file", file);
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
+
+    try {
+      setLoading(true);
+      const response = await axiosInstance.post("/artist/import", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.status === 201) {
+        showNotification("success", response?.data?.message);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage =
+          error.response?.data?.message || "An unexpected error occurred.";
+        showNotification("error", errorMessage);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleDelete = async (record: Artist) => {
     try {
@@ -157,15 +191,30 @@ const Artists: React.FC = () => {
       <div className="p-4">
         <h1 className="text-xl mb-4">Artist List</h1>
         <div className="flex">
-          <Button onClick={importFile}>Import</Button>
-          <Button onClick={exportFile}>Export</Button>
+          <RoleCheck allowedRoles={['artist_manager']}>
+            <Upload
+              beforeUpload={() => false}
+              onChange={handleFileChange}
+              accept=".csv,.xls,.xlsx"
+              showUploadList={false}
+            >
+              <Button loading={loading}>
+                <span>Import</span>
+              </Button>
+            </Upload>
+          </RoleCheck>
+          <RoleCheck allowedRoles={["artist_manager"]}>
+            <Button onClick={exportFile}>Export</Button>
+          </RoleCheck>
         </div>
-        <div className="flex justify-end mb-4">
-          <Button type="primary" onClick={handleCreate}>
-            <PlusCircleOutlined className="mr-2" />
-            Create
-          </Button>
-        </div>
+        <RoleCheck allowedRoles={["artist_manager"]}>
+          <div className="flex justify-end mb-4">
+            <Button type="primary" onClick={handleCreate}>
+              <PlusCircleOutlined className="mr-2" />
+              Create
+            </Button>
+          </div>
+        </RoleCheck>
         <CustomTable
           data={artists?.data || []}
           columns={columns}
@@ -175,6 +224,17 @@ const Artists: React.FC = () => {
           pageChange={pageChange}
           total={artists?.total}
           onRowClick={onRowClick}
+          additionalAction={(record: Artist) => (
+            <Button
+              icon={<NotificationOutlined />}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/artists/${record?.id}/songs`);
+              }}
+            >
+              Songs
+            </Button>
+          )}
         />
       </div>
     </MainLayout>

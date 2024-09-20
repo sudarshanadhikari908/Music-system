@@ -93,45 +93,56 @@ class ArtistController {
     }
   }
 
-  static async importArtists(
-    req: FileImportRequest,
-    res: Response
-  ): Promise<Response> {
+  static async importArtists(req: FileImportRequest, res: Response): Promise<Response> {
+    
     try {
       const file = req.file;
-      console.log(req, "Hey hey");
-      console.log(file?.mimetype, req?.file, "K cha  yiniharuma");
-      if (
-        !file ||
-        (!file.mimetype.includes("csv") &&
-          !file.mimetype.includes("excel") &&
-          !file.mimetype.includes("spreadsheetml"))
-      ) {
-        return res
-          .status(400)
-          .json({ message: "Please upload a valid CSV file." });
+      console.log(file, req?.file, "K cha t esma?")
+      console.log(file?.mimetype, file?.path, "File details for debugging"); // Log MIME type for debugging
+
+      // Supported file types for CSV, XLS, and XLSX
+      const supportedMimeTypes = [
+        "text/csv",
+        "application/csv",
+        "application/vnd.ms-excel", // For CSV and XLS
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" // For XLSX
+      ];
+
+      // Check if file exists and validate MIME type
+      if (!file || !supportedMimeTypes.includes(file.mimetype)) {
+        return res.status(400).json({ message: "Please upload a valid CSV, XLS, or XLSX file." });
       }
 
-      const artists: ArtistInterface[] = [];
+      const artists: any[] = [];
 
-      await new Promise<void>((resolve, reject) => {
-        fs.createReadStream(file.path)
-          .pipe(csvParser())
-          .on("data", (row) => {
-            artists.push({
-              name: row.name,
-              dob: new Date(row.dob),
-              gender: row.gender,
-              no_of_albums_released: parseInt(row.no_of_albums_released, 10),
-              genre: row.genre,
-              bio: row.bio,
-              first_release_year: parseInt(row.first_release_year, 10),
-            });
-          })
-          .on("end", resolve)
-          .on("error", reject);
-      });
+      // Parse CSV files
+      if (file.mimetype.includes("csv") || file.mimetype === "application/vnd.ms-excel") {
+        await new Promise<void>((resolve, reject) => {
+          fs.createReadStream(file.path)
+            .pipe(csvParser())
+            .on("data", (row) => {
+              artists.push({
+                name: row.name,
+                dob: new Date(row.dob),
+                gender: row.gender,
+                no_of_albums_released: parseInt(row.no_of_albums_released, 10),
+                genre: row.genre,
+                bio: row.bio,
+                first_release_year: parseInt(row.first_release_year, 10),
+              });
+            })
+            .on("end", resolve)
+            .on("error", reject);
+        });
+      }
 
+      // For XLS or XLSX files, you would need to use a library like 'xlsx'
+      if (file.mimetype.includes("spreadsheetml") || file.mimetype === "application/vnd.ms-excel") {
+        // You would handle XLSX or XLS parsing here using a library like 'xlsx'
+        // For example, you could use 'xlsx' to parse the file and then push rows to `artists`
+      }
+
+      // Save artists to the database
       for (const artist of artists) {
         await Artist.create(artist);
       }
